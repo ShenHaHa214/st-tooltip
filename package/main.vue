@@ -2,8 +2,8 @@
   <transition name="st-tooltip-fade">
     <div v-show="visible"
          class="st-tooltip-container"
-         :style="boxStyle"
-         :class="boxClass"
+         :style="tooltipStyle"
+         :class="tooltipClass"
          @mouseenter="showTip"
          @mouseleave="hiddenTip(true)">
       <div v-show="placement"
@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import './main.scss'
 import {
   debounce,
   checkScrollable,
@@ -40,12 +41,12 @@ import {
   computePlacementInfo,
   computeCoordinateBaseMid,
   computeCoordinateBaseEdge
-} from './util'
+} from './common'
   // passive support check
-let supportsPassive = false
-document.addEventListener('passive-check', () => {}, {
-  get passive () { supportsPassive = { passive: true } }
-})
+// let supportsPassive = false
+// document.addEventListener('passive-check', () => {}, {
+//   get passive () { supportsPassive = { passive: true } }
+// })
 export default {
   name: 'st-tooltip',
   props: {
@@ -73,23 +74,23 @@ export default {
     },
     // 用于监听自定义组件 emit 的事件
     customListeners: Object,
-    // tip 绑定的目标元素
+    // tooltip 绑定的目标元素
     target: null,
-    // tip 的容器，默认插入 body 中
+    // tooltip 的容器，默认插入 body 中
     container: null,
-    // 用于限制 tip 展示的方向，优先级按顺序
+    // 用于限制 tooltip 展示的方向，优先级按顺序
     placements: {
       type: Array,
       default () {
         return ['top', 'right', 'bottom', 'left']
       }
     },
-    // tip 窗口多久后自动消失，为 <=0 不消失
+    // tooltip 窗口多久后自动消失，为 <=0 不消失
     duration: {
       type: Number,
       default: 300
     },
-    // 是否为 tip 添加 transfrom 过渡
+    // 是否为 tooltip 添加 transfrom 过渡
     transition: Boolean,
     // 提示用的小箭头大小
     arrowsSize: {
@@ -117,10 +118,10 @@ export default {
       default: 'light'
     },
     // 自定义 class 的类名
-    customClass: {
-      type: String,
-      default: ''
-    }
+    // customClass: {
+    //   type: String,
+    //   default: ''
+    // }
   },
   data () {
     this.containerNode = null
@@ -139,14 +140,14 @@ export default {
         borderWidth: `${this.arrowsSize}px`
       }, this.arrowsPos)
     },
-    boxStyle () {
+    tooltipStyle () {
       const width = this.width
       return {
         width: typeof width === 'string' ? width : `${width}px`,
         zIndex: this.zIndex
       }
     },
-    boxClass () {
+    tooltipClass () {
       const { customClass, theme, transition } = this
       const tsClass = transition ? 'transition-transfrom' : ''
       return [customClass, theme, tsClass]
@@ -159,11 +160,12 @@ export default {
     }
   },
   methods: {
+    // 显示tooltip
     showTip () {
       clearTimeout(this.visibleTimer)
       this.visible = true
     },
-    // 隐藏 tip
+    // 隐藏tooltip,参数immedia表示是否立刻隐藏
     hiddenTip (immedia) {
       if (immedia) {
         this.visible = false
@@ -171,13 +173,13 @@ export default {
         this.setVisible(false)
       }
     },
-    // 更新 tip 位置
+    // 更新 tooltip 位置
     updateTip () {
       this.setContainerNode()
       this.showTip()
       this.asynSetCoordinate()
     },
-    // 设置 tip 的容器
+    // 设置 tooltip 的容器
     setContainerNode () {
       const {
         $el,
@@ -226,11 +228,11 @@ export default {
     setArrowsPos ({ placement, arrowsOffset }) {
       this.arrowsPos = computeArrowPos(placement, arrowsOffset, this.arrowsSize)
     },
-    // 设置 tip 经过 duration ms 后的状态
-    setVisible (v) {
+    // 设置 tooltip 经过 duration ms 后的状态
+    setVisible (state) {
       clearTimeout(this.visibleTimer)
       this.visibleTimer = setTimeout(() => {
-        this.visible = v
+        this.visible = state
         this.visibleTimer = null
       }, this.duration)
     },
