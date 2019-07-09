@@ -19,7 +19,7 @@ Vue.use(toolTip.directive)
 主题：dark || light (默认)
 显示位置：top || right || bottom || left (默认为top)
 
-###tooltip内容显示
+### tooltip内容显示
 只是显示文字信息可绑定字符串变量
 
 更多内容，可绑定一个对象
@@ -41,7 +41,10 @@ const tooltipObjects = {
   customClass:自定义样式，
 }
 ```
-
-
+### tooltip提供了一个工具函数tip
+```
+Vue.prototype.$tip = Vtip.tip
+```
+调用tip函数会返回一个组件实例，可调用组件方法对tooltip实例进行操作
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
